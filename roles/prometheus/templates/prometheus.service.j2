@@ -1,0 +1,21 @@
+[Unit]
+Description=Prometheus
+After=network-online.target
+Requires=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/prometheus \
+  --config.file={{ prometheus_config_dir }}/prometheus.yaml \
+  --storage.tsdb.path={{ prometheus_db_dir }} \
+  --web.console.libraries={{ prometheus_config_dir }}/console_libraries \
+  --web.console.templates={{ prometheus_config_dir }}/consoles \
+  --web.listen-address={{ prometheus_web_listen_address }} \
+
+LimitNOFILE=65000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

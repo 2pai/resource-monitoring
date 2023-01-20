@@ -1,0 +1,36 @@
+---
+# tasks file for node-exporter
+- name: check if node-exporter binary exsits
+  stat:
+    path: /usr/local/bin/node_exporter
+  register: ne
+
+- name: download & unarchive node-exporter
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v1.4.0/node_exporter-1.4.0.linux-amd64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+  when: not ne.stat.exists
+
+- name: create systemd svc
+  copy:
+    src: node-exporter.service
+    dest: /etc/systemd/system/node-exporter.service
+
+- name: systemd daemon reload
+  systemd:
+    daemon_reload: yes
+
+- name: start node exporter svc
+  systemd:
+    state: started
+    name: node-exporter
+    enabled: yes
+
+
+- name: check if node exporter running
+  uri:
+    url: http://localhost:9100
+    method: GET
+    status_code: 200

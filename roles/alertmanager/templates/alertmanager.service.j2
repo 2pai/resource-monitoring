@@ -1,0 +1,12 @@
+[Unit]
+Description=AlertManager Server Service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/alertmanager --config.file {{ alertmanager_config_dir }}/alertmanager.yaml --storage.path {{ alertmanager_config_dir }}/data
+
+
+[Install]
+WantedBy=multi-user.target

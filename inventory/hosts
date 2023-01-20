@@ -1,0 +1,12 @@
+[apps]
+app-0 ansible_host=xxx.xxx.xxx.xxx
+app-1 ansible_host=xxx.xxx.xxx.xxx
+app-2 ansible_host=xxx.xxx.xxx.xxx
+[grafana]
+grafana ansible_host=xxx.xxx.xxx.xxx
+[prometheus]
+prometheus ansible_host=xxx.xxx.xxx.xxx
+
+[all:vars]
+ansible_ssh_user=root
+ansible_ssh_private_key_file=~/.ssh/digitalocean.pem

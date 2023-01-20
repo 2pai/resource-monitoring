@@ -1,0 +1,6 @@
+---
+# vars file for prometheus
+
+prometheus_db_dir: /var/lib/prometheus
+prometheus_config_dir: /etc/prometheus
+prometheus_web_listen_address: 0.0.0.0:9090

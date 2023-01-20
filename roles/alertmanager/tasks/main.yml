@@ -1,0 +1,69 @@
+---
+- name: Check if alertmanager is installed.
+  stat: "path=/usr/local/bin/alertmanager"
+  register: alertmanager_bin
+
+- name: Unarchive alert-manager x64
+  become: true
+  unarchive: 
+    src: https://github.com/prometheus/alertmanager/releases/download/v0.25.0/alertmanager-0.25.0.linux-amd64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+  when: not alertmanager_bin.stat.exists
+
+- name: create prometheus configuration directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ alertmanager_config_dir }}"
+    - "{{ alertmanager_config_dir }}/data"
+    - "{{ alertmanager_config_dir }}/backup"
+  when: not alertmanager_bin.stat.exists
+
+- name: alertmanager Service systemd
+  become: true
+  template: 
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+
+- name: Copy config alertmanager
+  become: true
+  template:
+    src: templates/alertmanager.yaml.j2
+    dest: /etc/alertmanager/alertmanager.yaml
+
+- name: Copy config alert rulesfile
+  become: true
+  copy:
+    src: files/alert-rules.yaml
+    dest: /etc/alertmanager/alert-rules.yaml
+
+- name: Just force systemd to reread configs (2.4 and above)
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: Start alertmanager Service
+  become: true
+  systemd:
+    state: started
+    name: alertmanager
+    enabled: yes
+  when: not alertmanager_bin.stat.exists
+
+- name: Restart alertmanager Service
+  become: true
+  systemd:
+    state: restarted
+    name: alertmanager
+    enabled: yes
+  when: alertmanager_bin.stat.exists
+
+- name: Check if alertmanager is accessible
+  uri:
+    url: http://localhost:9093
+    method: GET
+    status_code: 200
+

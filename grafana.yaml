@@ -1,0 +1,6 @@
+---
+- name: provision for grafana server
+  hosts: grafana
+  become: yes
+  roles:
+    - grafana

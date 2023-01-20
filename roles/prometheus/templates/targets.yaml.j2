@@ -1,0 +1,9 @@
+#jinja2:lstrip_blocks: True
+
+{% for host in groups['apps'] %}
+- targets:
+  - {{ hostvars[host]['ansible_host'] }}:9100
+  labels:
+    node: {{ hostvars[host]["inventory_hostname"] }}
+    job: node-exporter
+{% endfor %}

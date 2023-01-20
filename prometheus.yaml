@@ -1,0 +1,7 @@
+---
+- name: provision for prometheus server
+  hosts: prometheus
+  become: yes
+  roles:
+    - prometheus
+    - alertmanager

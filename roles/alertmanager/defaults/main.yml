@@ -1,0 +1,5 @@
+---
+# defaults file for alertmanager
+alertmanager_config_dir: /etc/alertmanager
+telegram_bot_token: 341460062:AAFWdfTprIHT4HtZaEvvJtnDpkKHr_AThSE
+telegram_bot_chatid: -884004363

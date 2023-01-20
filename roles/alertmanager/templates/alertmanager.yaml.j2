@@ -1,0 +1,24 @@
+#jinja2:lstrip_blocks: True
+global:
+  resolve_timeout: 30s
+route:
+  group_wait: 0s
+  group_interval: 10s
+  repeat_interval: 1m
+  receiver: telegram-notifications
+receivers:
+- name: 'telegram-notifications'
+  telegram_configs:
+  - bot_token: {{ telegram_bot_token }}
+    api_url: https://api.telegram.org
+    chat_id: {{ telegram_bot_chatid }}
+    {% raw %}
+    message: >-
+     {{ range .Alerts -}}
+     *Alert:* {{ .Annotations.summary }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+     *Description:* {{ .Annotations.description }}
+     *Details:*
+       {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+       {{ end }}
+     {{ end }}
+    {% endraw %}
